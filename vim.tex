@@ -1,0 +1,204 @@
+\documentclass{lug}
+
+\title{VIM: The Awesome Part}
+\author{Jack Rosenthal}
+
+\begin{document}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Generalizing our Keystrokes}
+
+    Most beginners at VIM see the keystrokes we type \textbf{statically}, i.e.\ 
+    they see the only keystrokes we make are the ones we remember the
+    keystrokes for.
+
+    \medskip
+
+    \begin{center}
+    \begin{tabular}{c c}
+        \textbf{Keys remembered} & \textbf{What it does} \\
+        \texttt{dd} & Delete line \\
+        \texttt{cw} & Change word \\
+        \texttt{dw} & Delete word \\
+        \texttt{yy} & Yank line \\
+        $\vdots$ & $\vdots$
+    \end{tabular}
+    \end{center}
+
+    \medskip
+
+    This is tedious, and incredibly hard to remember. Chances are, if you
+    remember VIM this way, then you will hate it.
+
+    \framebreak%
+
+    Let's divide our \texttt{NORMAL} mode keystrokes as two types\footnote{not
+    all keystrokes fall under these two categories}:
+    \textbf{actions} and \textbf{movements}.
+
+    \begin{itemize}
+        \item Movements alone will move your cursor.
+        \item Actions do things, and often take movements to act on.
+        \item Repeating an action keystroke for its movement will act on the
+            movement of the line
+        \item When using one of the \texttt{VISUAL} modes, the $m$ parameter to
+            actions are dropped, and actions apply to the selection
+    \end{itemize}
+
+    \begin{center}
+    \begin{tabular}{c c | c c}
+        \textbf{Action} & & \textbf{Movement} & \\
+        \texttt{d$m$} & delete $m$ & \texttt{h j k l} & left, down, up, right \\
+        \texttt{y$m$} & yank $m$ & \texttt{b w} & word left, right \\
+        \texttt{c$m$} & change $m$ & \texttt{\string^ \$} & beginning, end of line \\
+        \texttt{g\string~$m$} & swap case on $m$ & \texttt{gg G} & beginning, end of file \\
+        $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$
+    \end{tabular}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Repeating \texttt{NORMAL} Mode Commands}
+    Adding a number $n$ in front of a movement will do it $n$ times.
+
+    \medskip
+    \textbf{Examples:}
+
+    \begin{itemize}
+        \item \texttt{d5w} -- delete the next 5 words
+        \item \texttt{5j} -- move 5 lines down
+        \item \texttt{c2j} -- change this line, and the next two
+    \end{itemize}
+
+    \bigskip
+
+    You can also use the \texttt{.} key to repeat a command again. For example,
+    change a word, then move 5 words over, press \texttt{.} to make the same
+    substitution again.
+\end{frame}
+
+\begin{frame}
+    \frametitle{\texttt{f}ind and \texttt{t}ill}
+
+    \begin{itemize}
+        \item \texttt{f$c$} will be the motion on to the next occurrence of the
+            $c$ character on the current line
+        \item \texttt{t$c$} does the same, but goes right before $c$ rather
+            than on
+        \item \texttt{F$c$} and \texttt{T$c$} do the same, but go backwards on
+            the line
+    \end{itemize}
+
+    \medskip
+    \textbf{Examples:}
+
+    \begin{itemize}
+        \item \texttt{fs} -- move to the next occurrence of \texttt{s} on the
+            line
+        \item \texttt{ct.} -- change till \texttt{.}
+        \item \texttt{dTA} -- delete backwards until just before \texttt{A}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{\texttt{i}nside and \texttt{a}round}
+    VIM has special movements that only act with actions called \textbf{inside}
+    and \textbf{around}. They take a parameter of what to go inside or around.
+    It works a bit like this:
+
+    \bigskip
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            {\centering \textbf{Inside} \par}
+            \begin{itemize}
+                \item \texttt{i" i'} -- inside a string
+                \item \texttt{i) i\} i]} -- inside parens, squirly braces,
+                    brackets
+                \item \texttt{iw is ip} -- inside a word, sentence, paragraph
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            {\centering \textbf{Around} \par}
+            \begin{itemize}
+                \item \texttt{a" a'} -- around a string
+                \item \texttt{a) a\} a]} -- around parens, squirly braces,
+                    brackets
+                \item \texttt{aw as ap} -- around a word, sentence, paragraph
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \medskip
+
+    For example:
+    \begin{itemize}
+        \item \texttt{ci"} -- change inside the string you are on
+        \item \texttt{vip} -- select the current paragraph
+        \item \texttt{dis} -- delete the current sentence
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{The promised ROT13 encoding action}
+
+    \Huge
+    \centering
+
+    \texttt{g?$m$}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Taking Advantage of Deletion}
+
+    \texttt{d}, \texttt{x} will put what was deleted into the paste register.
+    This means you can swap things really easily:
+
+    \begin{itemize}
+        \item \texttt{xp} -- swap characters
+        \item \texttt{ddp} -- swap lines
+        \item and so fourth\dots
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Some \texttt{Ex} mode stuff: \texttt{:g/}}
+
+    \begin{itemize}
+        \item \texttt{:g/$regex$/$cmd$} will run the \texttt{Ex} mode command
+            $cmd$ on every line that matches $regex$
+        \item For example, to delete all blank lines, do
+            \texttt{:g/\string^\$/d}
+        \item Because the order on which \texttt{:g/} acts, you can use it to
+            flip all the lines in a file using \texttt{:g/\string^/m0}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Getting some command output in your buffer}
+
+    \begin{itemize}
+        \item \texttt{:!} followed by some shell command will run that command using your
+            shell from vim.
+        \item \texttt{:r$cmd$} will redirect some \texttt{Ex} mode command to
+            the buffer
+        \item We can combine them to redirect shell commands to our buffer. For
+            example \texttt{:r!fortune | cowsay}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{VIM Plugins}
+
+    \begin{itemize}
+        \item VIM plugins are awesome, they let you alter VIM to nicely fit
+            your work flow
+        \item There are crap tons of VIM plugins
+        \item You can turn VIM into a full fledged IDE with plugins
+        \item I invite you to do a web search to find the ones you like best!
+    \end{itemize}
+\end{frame}
+
+\end{document}
